@@ -98,4 +98,8 @@ public class ChatSocket {
             }
         });
     }
+
+    public static void main(String[] args) {
+
+    }
 }
