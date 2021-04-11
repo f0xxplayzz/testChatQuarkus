@@ -8,12 +8,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
 public class SessionManager {
-    private Map<String, Map<String,Session>> dungeonPlayerMap = new HashMap<>();
-    private Map<String,Map<String,Map<String,Session>>> dungeonRoomPlayerMap = new HashMap<>();
+    private ConcurrentHashMap<String, ConcurrentHashMap<String,Session>> dungeonPlayerMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String,ConcurrentHashMap<String,ConcurrentHashMap<String,Session>>> dungeonRoomPlayerMap = new ConcurrentHashMap<>();
 
     public void joinChat(Session session, String dungeonName, String playerName){
         if(dungeonPlayerMap.get(dungeonName) == null){
-            Map<String,Session> playerMap = new HashMap<>();
+            ConcurrentHashMap<String,Session> playerMap = new ConcurrentHashMap();
             playerMap.put(playerName,session);
             dungeonPlayerMap.put(dungeonName,playerMap);
         } else {
@@ -29,8 +29,8 @@ public class SessionManager {
         if(dungeonRoomPlayerMap.get(dungeonName).get(newRoom) != null){
             dungeonRoomPlayerMap.get(dungeonName).get(newRoom).put(playerName,session);
         }else{
-            Map<String,Map<String,Session>> map = new HashMap<>();
-            Map<String,Session> sessionMap = new HashMap<>();
+            ConcurrentHashMap<String,ConcurrentHashMap<String,Session>> map = new ConcurrentHashMap();
+            ConcurrentHashMap<String,Session> sessionMap = new ConcurrentHashMap();
             sessionMap.put(playerName,session);
             map.put(newRoom,sessionMap);
         }
@@ -39,13 +39,13 @@ public class SessionManager {
     public void setRoomFirstTime(String playerName, String dungeonName, String roomName){
         Session session = dungeonPlayerMap.get(dungeonName).get(playerName);
         if(dungeonRoomPlayerMap.get(dungeonName) == null){
-            Map<String,Session> playerMap = new HashMap<>();
+            ConcurrentHashMap<String,Session> playerMap = new ConcurrentHashMap();
             playerMap.put(playerName,session);
-            Map<String,Map<String,Session>> roomMap = new HashMap<>();
+            ConcurrentHashMap<String,ConcurrentHashMap<String,Session>> roomMap = new ConcurrentHashMap();
             roomMap.put(roomName,playerMap);
             dungeonRoomPlayerMap.put(dungeonName,roomMap);
         }else if(dungeonRoomPlayerMap.get(dungeonName).get(roomName) == null){
-            Map<String,Session> playerMap = new ConcurrentHashMap<>();
+            ConcurrentHashMap<String,Session> playerMap = new ConcurrentHashMap<>();
             playerMap.put(playerName,session);
             dungeonRoomPlayerMap.get(dungeonName).put(roomName,playerMap);
         } else if(!dungeonRoomPlayerMap.get(dungeonName).get(roomName).containsKey(playerName)){
@@ -64,11 +64,11 @@ public class SessionManager {
         }
     }
 
-    public Map<String, Map<String,Session>> getDungeonPlayerMap(){
+    public ConcurrentHashMap<String, ConcurrentHashMap<String,Session>> getDungeonPlayerMap(){
         return dungeonPlayerMap;
     }
 
-    public Map<String,Map<String,Map<String,Session>>> getDungeonRoomPlayerMap(){
+    public ConcurrentHashMap<String,ConcurrentHashMap<String,ConcurrentHashMap<String,Session>>> getDungeonRoomPlayerMap(){
         return dungeonRoomPlayerMap;
     }
 }
